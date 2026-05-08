@@ -11,10 +11,15 @@
   .container { max-width:700px; margin:0 auto; }
   .page-header { background:#fff; border-radius:12px 12px 0 0; padding:24px 28px 20px; border:1px solid #ebebeb; border-bottom:none; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
   .header-left { display:flex; align-items:flex-start; gap:10px; }
+  .header-right { display:flex; align-items:center; gap:10px; }
   .accent-bar { width:4px; height:32px; background:#e8420a; border-radius:2px; flex-shrink:0; margin-top:2px; }
   .page-title { font-size:16px; font-weight:600; color:#e8420a; line-height:1.3; }
   .subtitle { font-size:11px; color:#aaa; margin-top:3px; }
   .badge { padding:3px 10px; border-radius:6px; font-size:10px; font-weight:500; font-family:'DM Mono',monospace; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; white-space:nowrap; flex-shrink:0; }
+  .lang-switch { display:flex; border:1px solid #e8e8e8; border-radius:8px; overflow:hidden; background:#fff; }
+  .lang-btn { border:none; background:transparent; padding:6px 10px; font-size:11px; font-weight:600; color:#666; cursor:pointer; transition:all 0.15s; }
+  .lang-btn.active { background:#fff5f2; color:#e8420a; }
+  .lang-btn:not(.active):hover { background:#f7f7f7; }
   .gofo-bar { height:4px; background:linear-gradient(to right,#e8420a 80%,#f5a582 100%); border-radius:0; margin-bottom:20px; }
   .respondent-card { background:#fff; border-radius:12px; padding:20px 24px; margin-bottom:16px; border:1px solid #ebebeb; }
   .respondent-title { font-size:12px; font-weight:600; color:#1a1a1a; margin-bottom:14px; display:flex; align-items:center; gap:7px; }
@@ -70,7 +75,13 @@
         <div class="subtitle">FPR01 Station Operations · For internal reference only</div>
       </div>
     </div>
-    <div class="badge">FPR-ECL</div>
+    <div class="header-right">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="lang-btn active" id="lang-en">EN</button>
+        <button type="button" class="lang-btn" id="lang-es">ES</button>
+      </div>
+      <div class="badge">FPR-ECL</div>
+    </div>
   </div>
   <div class="gofo-bar"></div>
 
@@ -163,6 +174,140 @@
 
 <script>
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCL_Sxc6reKZvYXiBIgxNIJ8FnedvAuCqpGgpe1OefNaQoI5qWrI6jyfOQXqqc-Nf3/exec";
+  let currentLang = "en";
+  const I18N = {
+    en: {
+      pageTitle: "FPR-ECL — Capacity Assessment Questionnaire",
+      subtitle: "FPR01 Station Operations · For internal reference only",
+      respondentTitle: "Respondent Information",
+      yourName: "Your Name *",
+      yourEmail: "Your Email *",
+      namePlaceholder: "e.g. John Smith",
+      emailPlaceholder: "e.g. john@ecl.com",
+      sections: [
+        "Current Capacity Baseline",
+        "Capacity Expansion Capability",
+        "Route Management & Road Conditions",
+        "Driver Training & Daily Management"
+      ],
+      questions: [
+        "How many active drivers does ECL currently have on the roster?",
+        "What is the average number of packages assigned to each driver per day?",
+        "What is the maximum package limit per driver per day?",
+        "On average, how many hours does it take a driver to complete all deliveries? (Delivery time only, excluding pick-up and commute)",
+        "How long does it typically take for a driver to complete scanning and pick up all packages at the station each morning?",
+        "How long is the average commute for drivers to and from the station?",
+        "What is the current weekly check-in volume handled by ECL? What is the peak volume recorded so far?",
+        "If the weekly volume increases from ~6,000 to 12,000 or 15,000 packages, we estimate 30–80 additional drivers would be required. Is ECL able to recruit and onboard this number within two months of a confirmed volume increase?",
+        "How long has ECL's current recruitment campaign been running, and how many drivers have been hired in total during this period?",
+        "What is the driver retention rate? How many drivers have left, and how many have been replaced by new hires?",
+        "In the event of a capacity shortage, does ECL have a backup pool of drivers available to cover the gap?",
+        "What is the fastest turnaround time to bring in additional drivers if needed? Is there a contingency plan in place?",
+        "Among the current driver roster, how many drivers have the willingness and physical capacity to handle a higher daily volume (200–250 packages per day)?",
+        "How does ECL periodically assess which routes are under the most pressure? What is the process for rebalancing workloads across routes when pressure builds up?",
+        "For routes with known systemic access barriers — such as gated communities and malls — does ECL maintain a structured record or database of gate codes and access information? If so, how is this kept up to date and shared with drivers?",
+        "What does the onboarding and training process look like for new drivers? How long does it typically take before a new driver is operating independently and efficiently?",
+        "Are drivers fully aware of the key delivery metrics — specifically 2400 POD, 4800 POD, and Final Delivery Rate — and do they understand how their daily actions directly impact these numbers?",
+        "What does ECL's daily driver management process look like? Is there a regular morning briefing or daily check-in with drivers before they head out?",
+        "What is ECL's internal process for handling underperforming drivers? Please walk us through the steps — from first warning to termination — and how quickly each stage is triggered.",
+        "When a route is under high volume pressure, is the station manager willing and able to conduct pre-scanning before drivers depart? Is this currently being done consistently?"
+      ],
+      q6Note: "This helps us understand the total daily working hours and capacity constraints.",
+      q20Note: "Note: ECL is currently required to pre-scan every day. We would like to understand the current status and commitment level.",
+      optionsQ8: ["Yes", "No", "Possibly, with conditions"],
+      optionsQ11: ["Yes", "No", "Partially"],
+      submitBtn: "Submit Response",
+      submitNote: "Your response will be saved to Google Sheets and a confirmation email will be sent to you.",
+      successTitle: "Response Submitted Successfully",
+      successSub: "Thank you for completing the FPR-ECL Capacity Assessment.<br>A confirmation email has been sent to your inbox.<br><br>The FPR01 Station Team will review your response shortly.",
+      answerPlaceholder: "Your answer...",
+      detailPlaceholder: "Please elaborate...",
+      fillRequiredToast: "⚠️ Please fill in your name and email.",
+      submitFailedToast: "❌ Submission failed. Please try again.",
+      submitting: "Submitting..."
+    },
+    es: {
+      pageTitle: "FPR-ECL — Cuestionario de Evaluacion de Capacidad",
+      subtitle: "Operaciones de Estacion FPR01 · Solo para referencia interna",
+      respondentTitle: "Informacion del encuestado",
+      yourName: "Tu nombre *",
+      yourEmail: "Tu correo electronico *",
+      namePlaceholder: "ej. Juan Perez",
+      emailPlaceholder: "ej. juan@ecl.com",
+      sections: [
+        "Linea base de capacidad actual",
+        "Capacidad de expansion",
+        "Gestion de rutas y condiciones viales",
+        "Capacitacion de conductores y gestion diaria"
+      ],
+      questions: [
+        "Cuantos conductores activos tiene actualmente ECL en su plantilla?",
+        "Cual es el numero promedio de paquetes asignados a cada conductor por dia?",
+        "Cual es el limite maximo de paquetes por conductor por dia?",
+        "En promedio, cuantas horas tarda un conductor en completar todas las entregas? (Solo tiempo de entrega, excluyendo recoleccion y traslado)",
+        "Cuanto tiempo suele tardar un conductor en escanear y recoger todos los paquetes en la estacion cada manana?",
+        "Cuanto dura en promedio el traslado de los conductores hacia y desde la estacion?",
+        "Cual es el volumen semanal actual de check-in que maneja ECL? Cual ha sido el volumen pico registrado hasta ahora?",
+        "Si el volumen semanal aumenta de ~6,000 a 12,000 o 15,000 paquetes, estimamos que se requeririan entre 30 y 80 conductores adicionales. Puede ECL reclutar e incorporar esa cantidad dentro de dos meses despues de confirmar el aumento?",
+        "Cuanto tiempo lleva activa la campana de reclutamiento actual de ECL y cuantos conductores se han contratado en total durante este periodo?",
+        "Cual es la tasa de retencion de conductores? Cuantos conductores se han ido y cuantos han sido reemplazados por nuevas contrataciones?",
+        "En caso de falta de capacidad, ECL cuenta con un grupo de respaldo de conductores para cubrir la brecha?",
+        "Cual es el tiempo de respuesta mas rapido para incorporar conductores adicionales si fuera necesario? Existe un plan de contingencia?",
+        "Dentro de la plantilla actual, cuantos conductores tienen la disposicion y capacidad fisica para manejar un volumen diario mayor (200-250 paquetes por dia)?",
+        "Como evalua ECL periodicamente que rutas estan bajo mayor presion? Cual es el proceso para rebalancear cargas cuando aumenta la presion?",
+        "Para rutas con barreras de acceso sistemicas, como comunidades cerradas y centros comerciales, ECL mantiene un registro estructurado de codigos y accesos? Si es asi, como se actualiza y comparte con los conductores?",
+        "Como es el proceso de incorporacion y capacitacion para nuevos conductores? Cuanto tiempo suele tomar para que un conductor nuevo opere de forma independiente y eficiente?",
+        "Los conductores conocen completamente las metricas clave de entrega - especificamente 2400 POD, 4800 POD y Final Delivery Rate - y entienden como sus acciones diarias impactan directamente estos indicadores?",
+        "Como es el proceso diario de gestion de conductores en ECL? Hay una reunion matutina o check-in diario antes de salir?",
+        "Cual es el proceso interno de ECL para gestionar conductores con bajo desempeno? Explica las etapas, desde la primera advertencia hasta la desvinculacion, y la rapidez de activacion de cada una.",
+        "Cuando una ruta esta bajo alta presion de volumen, el gerente de estacion esta dispuesto y puede realizar pre-escaneo antes de la salida? Se esta realizando de forma consistente?"
+      ],
+      q6Note: "Esto nos ayuda a entender las horas totales de trabajo diario y las restricciones de capacidad.",
+      q20Note: "Nota: Actualmente ECL debe realizar pre-escaneo todos los dias. Queremos entender el estado actual y el nivel de compromiso.",
+      optionsQ8: ["Si", "No", "Posiblemente, con condiciones"],
+      optionsQ11: ["Si", "No", "Parcialmente"],
+      submitBtn: "Enviar respuesta",
+      submitNote: "Tu respuesta se guardara en Google Sheets y se enviara un correo de confirmacion.",
+      successTitle: "Respuesta enviada con exito",
+      successSub: "Gracias por completar la evaluacion de capacidad FPR-ECL.<br>Se envio un correo de confirmacion a tu bandeja de entrada.<br><br>El equipo de la estacion FPR01 revisara tu respuesta en breve.",
+      answerPlaceholder: "Tu respuesta...",
+      detailPlaceholder: "Por favor, detalla...",
+      fillRequiredToast: "⚠️ Completa tu nombre y correo electronico.",
+      submitFailedToast: "❌ Error al enviar. Intentalo de nuevo.",
+      submitting: "Enviando..."
+    }
+  };
+
+  function applyLanguage(lang) {
+    const t = I18N[lang];
+    currentLang = lang;
+    document.querySelector(".page-title").textContent = t.pageTitle;
+    document.querySelector(".subtitle").textContent = t.subtitle;
+    document.querySelector(".respondent-title").textContent = t.respondentTitle;
+    document.querySelector('label[for="resp-name"]').textContent = t.yourName;
+    document.querySelector('label[for="resp-email"]').textContent = t.yourEmail;
+    document.getElementById("resp-name").placeholder = t.namePlaceholder;
+    document.getElementById("resp-email").placeholder = t.emailPlaceholder;
+    document.querySelectorAll(".section-title").forEach((el, i) => { el.textContent = t.sections[i] || ""; });
+    document.querySelectorAll(".q-text").forEach((el, i) => { el.textContent = t.questions[i] || ""; });
+    document.querySelectorAll('.q-input[name^="q"]').forEach((el) => { el.placeholder = t.answerPlaceholder; });
+    document.querySelector('textarea[name="q8_detail"]').placeholder = t.detailPlaceholder;
+    document.querySelector('textarea[name="q11_detail"]').placeholder = t.detailPlaceholder;
+    document.querySelectorAll(".q-note")[0].textContent = t.q6Note;
+    document.querySelectorAll(".q-note")[1].textContent = t.q20Note;
+    document.querySelector('label[for="q8-yes"]').textContent = t.optionsQ8[0];
+    document.querySelector('label[for="q8-no"]').textContent = t.optionsQ8[1];
+    document.querySelector('label[for="q8-maybe"]').textContent = "⚠️ " + t.optionsQ8[2];
+    document.querySelector('label[for="q11-yes"]').textContent = t.optionsQ11[0];
+    document.querySelector('label[for="q11-no"]').textContent = t.optionsQ11[1];
+    document.querySelector('label[for="q11-partial"]').textContent = t.optionsQ11[2];
+    document.getElementById("btn-text").textContent = t.submitBtn;
+    document.querySelector(".submit-note").textContent = t.submitNote;
+    document.querySelector(".success-title").textContent = t.successTitle;
+    document.querySelector(".success-sub").innerHTML = t.successSub;
+    document.getElementById("lang-en").classList.toggle("active", lang === "en");
+    document.getElementById("lang-es").classList.toggle("active", lang === "es");
+  }
 
   function showToast(msg, type) {
     const t = document.getElementById("toast");
@@ -171,13 +316,17 @@
     setTimeout(() => { t.className = "toast"; }, 4000);
   }
 
+  document.getElementById("lang-en").addEventListener("click", function() { applyLanguage("en"); });
+  document.getElementById("lang-es").addEventListener("click", function() { applyLanguage("es"); });
+  applyLanguage("en");
+
   document.getElementById("ecl-form").addEventListener("submit", async function(e) {
     e.preventDefault();
     const btn = document.getElementById("submit-btn");
     const btnText = document.getElementById("btn-text");
     const name = document.getElementById("resp-name").value.trim();
     const email = document.getElementById("resp-email").value.trim();
-    if (!name || !email) { showToast("⚠️ Please fill in your name and email.", "error"); return; }
+    if (!name || !email) { showToast(I18N[currentLang].fillRequiredToast, "error"); return; }
 
     const formData = new FormData(this);
     const payload = { name, email };
@@ -188,7 +337,7 @@
     });
 
     btn.disabled = true;
-    btnText.textContent = "Submitting...";
+    btnText.textContent = I18N[currentLang].submitting;
 
     try {
       await fetch(APPS_SCRIPT_URL, {
@@ -200,9 +349,9 @@
       document.getElementById("success-screen").style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      showToast("❌ Submission failed. Please try again.", "error");
+      showToast(I18N[currentLang].submitFailedToast, "error");
       btn.disabled = false;
-      btnText.textContent = "Submit Response";
+      btnText.textContent = I18N[currentLang].submitBtn;
     }
   });
 </script>
