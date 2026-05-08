@@ -224,6 +224,7 @@
       detailPlaceholder: "Please elaborate...",
       fillRequiredToast: "⚠️ Please fill in your name and email.",
       submitFailedToast: "❌ Submission failed. Please try again.",
+      submitTimeoutToast: "⌛ Submission timed out. Please try again.",
       submitting: "Submitting..."
     },
     es: {
@@ -274,6 +275,7 @@
       detailPlaceholder: "Por favor, detalla...",
       fillRequiredToast: "⚠️ Completa tu nombre y correo electronico.",
       submitFailedToast: "❌ Error al enviar. Intentalo de nuevo.",
+      submitTimeoutToast: "⌛ Tiempo de envio agotado. Intentalo de nuevo.",
       submitting: "Enviando..."
     }
   };
@@ -343,17 +345,25 @@
       payload.submittedAt = new Date().toISOString();
       payload.lang = currentLang;
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       await fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       document.getElementById("ecl-form").style.display = "none";
       document.getElementById("success-screen").style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      showToast(I18N[currentLang].submitFailedToast, "error");
+      const msg = err && err.name === "AbortError"
+        ? I18N[currentLang].submitTimeoutToast
+        : I18N[currentLang].submitFailedToast;
+      showToast(msg, "error");
       btn.disabled = false;
       btnText.textContent = I18N[currentLang].submitBtn;
     }
