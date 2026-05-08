@@ -340,10 +340,17 @@
     btnText.textContent = I18N[currentLang].submitting;
 
     try {
+      const requestBody = new URLSearchParams();
+      Object.entries(payload).forEach(([key, value]) => {
+        requestBody.append(key, value == null ? "" : String(value));
+      });
+      requestBody.append("submittedAt", new Date().toISOString());
+      requestBody.append("lang", currentLang);
+
       await fetch(APPS_SCRIPT_URL, {
-        method: "POST", mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        method: "POST",
+        mode: "no-cors",
+        body: requestBody
       });
       document.getElementById("ecl-form").style.display = "none";
       document.getElementById("success-screen").style.display = "block";
