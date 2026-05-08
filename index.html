@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FPR-ECL Capacity Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f7f7f5; font-family:'DM Sans',sans-serif; color:#1a1a1a; padding:32px 16px 80px; }
+  .container { max-width:700px; margin:0 auto; }
+  .page-header { background:#fff; border-radius:12px 12px 0 0; padding:24px 28px 20px; border:1px solid #ebebeb; border-bottom:none; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .header-left { display:flex; align-items:flex-start; gap:10px; }
+  .accent-bar { width:4px; height:32px; background:#e8420a; border-radius:2px; flex-shrink:0; margin-top:2px; }
+  .page-title { font-size:16px; font-weight:600; color:#e8420a; line-height:1.3; }
+  .subtitle { font-size:11px; color:#aaa; margin-top:3px; }
+  .badge { padding:3px 10px; border-radius:6px; font-size:10px; font-weight:500; font-family:'DM Mono',monospace; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; white-space:nowrap; flex-shrink:0; }
+  .gofo-bar { height:4px; background:linear-gradient(to right,#e8420a 80%,#f5a582 100%); border-radius:0; margin-bottom:20px; }
+  .respondent-card { background:#fff; border-radius:12px; padding:20px 24px; margin-bottom:16px; border:1px solid #ebebeb; }
+  .respondent-title { font-size:12px; font-weight:600; color:#1a1a1a; margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+  .respondent-title::before { content:''; display:inline-block; width:7px; height:7px; background:#e8420a; border-radius:50%; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field-group { display:flex; flex-direction:column; gap:5px; }
+  .field-label { font-size:10px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
+  .field-input { padding:9px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; color:#1a1a1a; background:#fafafa; transition:all 0.15s; outline:none; }
+  .field-input:focus { border-color:#e8420a; background:#fff; box-shadow:0 0 0 3px rgba(232,66,10,0.08); }
+  .field-input::placeholder { color:#ccc; }
+  .section { background:#fff; border-radius:12px; border:1px solid #ebebeb; margin-bottom:16px; overflow:hidden; }
+  .section-header { display:flex; align-items:center; gap:10px; padding:15px 20px; border-bottom:1px solid #f4f4f4; background:#fafafa; }
+  .section-num { width:26px; height:26px; border-radius:50%; background:#e8420a; color:#fff; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-title { font-size:13px; font-weight:600; color:#1a1a1a; }
+  .q-item { padding:15px 20px; border-bottom:1px solid #f4f4f4; }
+  .q-item:last-child { border-bottom:none; }
+  .q-item:hover { background:#fffaf9; }
+  .q-meta { display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+  .q-num { font-family:'DM Mono',monospace; font-size:9px; font-weight:600; color:#fff; background:#ccc; border-radius:4px; padding:2px 6px; flex-shrink:0; }
+  .q-text { font-size:12.5px; color:#333; line-height:1.65; }
+  .q-note { font-size:10.5px; color:#aaa; margin-top:5px; font-style:italic; }
+  .q-input { margin-top:10px; width:100%; padding:10px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12.5px; color:#1a1a1a; background:#fafafa; resize:vertical; min-height:72px; transition:all 0.15s; outline:none; line-height:1.6; }
+  .q-input:focus { border-color:#e8420a; background:#fff; box-shadow:0 0 0 3px rgba(232,66,10,0.08); }
+  .q-input::placeholder { color:#ccc; }
+  .radio-group { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .radio-option { display:none; }
+  .radio-label { padding:7px 14px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:12px; color:#555; cursor:pointer; transition:all 0.15s; background:#fafafa; user-select:none; }
+  .radio-option:checked + .radio-label { border-color:#e8420a; background:#fff5f2; color:#e8420a; font-weight:500; }
+  .submit-area { margin-top:24px; text-align:center; }
+  .submit-btn { display:inline-flex; align-items:center; gap:8px; padding:13px 36px; background:#e8420a; color:#fff; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; box-shadow:0 2px 8px rgba(232,66,10,0.25); }
+  .submit-btn:hover { background:#cf3809; transform:translateY(-1px); }
+  .submit-btn:disabled { background:#ccc; box-shadow:none; cursor:not-allowed; transform:none; }
+  .submit-note { margin-top:8px; font-size:10.5px; color:#bbb; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); padding:12px 22px; border-radius:10px; font-size:12.5px; font-weight:500; opacity:0; transition:all 0.3s; pointer-events:none; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,0.12); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.success { background:#1a1a1a; color:#fff; }
+  .toast.error { background:#e8420a; color:#fff; }
+  .success-screen { display:none; text-align:center; background:#fff; border-radius:12px; border:1px solid #ebebeb; padding:56px 28px; }
+  .success-icon { font-size:44px; margin-bottom:14px; }
+  .success-title { font-size:17px; font-weight:600; color:#1a1a1a; margin-bottom:8px; }
+  .success-sub { font-size:12.5px; color:#888; line-height:1.65; }
+  @media(max-width:480px) { .field-row { grid-template-columns:1fr; } .page-header { flex-direction:column; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <div class="header-left">
+      <div class="accent-bar"></div>
+      <div>
+        <div class="page-title">FPR-ECL — Capacity Assessment Questionnaire</div>
+        <div class="subtitle">FPR01 Station Operations · For internal reference only</div>
+      </div>
+    </div>
+    <div class="badge">FPR-ECL</div>
+  </div>
+  <div class="gofo-bar"></div>
+
+  <form id="ecl-form">
+
+    <div class="respondent-card">
+      <div class="respondent-title">Respondent Information</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="resp-name">Your Name *</label>
+          <input class="field-input" id="resp-name" name="name" type="text" placeholder="e.g. John Smith" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="resp-email">Your Email *</label>
+          <input class="field-input" id="resp-email" name="email" type="email" placeholder="e.g. john@ecl.com" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">1</div><div class="section-title">Current Capacity Baseline</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q1</span></div><div class="q-text">How many active drivers does ECL currently have on the roster?</div><textarea class="q-input" name="q1" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q2</span></div><div class="q-text">What is the average number of packages assigned to each driver per day?</div><textarea class="q-input" name="q2" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q3</span></div><div class="q-text">What is the maximum package limit per driver per day?</div><textarea class="q-input" name="q3" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q4</span></div><div class="q-text">On average, how many hours does it take a driver to complete all deliveries? (Delivery time only, excluding pick-up and commute)</div><textarea class="q-input" name="q4" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q5</span></div><div class="q-text">How long does it typically take for a driver to complete scanning and pick up all packages at the station each morning?</div><textarea class="q-input" name="q5" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q6</span></div><div class="q-text">How long is the average commute for drivers to and from the station?</div><div class="q-note">This helps us understand the total daily working hours and capacity constraints.</div><textarea class="q-input" name="q6" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q7</span></div><div class="q-text">What is the current weekly check-in volume handled by ECL? What is the peak volume recorded so far?</div><textarea class="q-input" name="q7" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">2</div><div class="section-title">Capacity Expansion Capability</div></div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q8</span></div>
+        <div class="q-text">If the weekly volume increases from ~6,000 to 12,000 or 15,000 packages, we estimate 30–80 additional drivers would be required. Is ECL able to recruit and onboard this number within two months of a confirmed volume increase?</div>
+        <div class="radio-group">
+          <input class="radio-option" type="radio" name="q8" id="q8-yes" value="Yes"><label class="radio-label" for="q8-yes">Yes</label>
+          <input class="radio-option" type="radio" name="q8" id="q8-no" value="No"><label class="radio-label" for="q8-no">No</label>
+          <input class="radio-option" type="radio" name="q8" id="q8-maybe" value="Possibly, with conditions"><label class="radio-label" for="q8-maybe">⚠️ Possibly, with conditions</label>
+        </div>
+        <textarea class="q-input" name="q8_detail" placeholder="Please elaborate..."></textarea>
+      </div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q9</span></div><div class="q-text">How long has ECL's current recruitment campaign been running, and how many drivers have been hired in total during this period?</div><textarea class="q-input" name="q9" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q10</span></div><div class="q-text">What is the driver retention rate? How many drivers have left, and how many have been replaced by new hires?</div><textarea class="q-input" name="q10" placeholder="Your answer..."></textarea></div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q11</span></div>
+        <div class="q-text">In the event of a capacity shortage, does ECL have a backup pool of drivers available to cover the gap?</div>
+        <div class="radio-group">
+          <input class="radio-option" type="radio" name="q11" id="q11-yes" value="Yes"><label class="radio-label" for="q11-yes">Yes</label>
+          <input class="radio-option" type="radio" name="q11" id="q11-no" value="No"><label class="radio-label" for="q11-no">No</label>
+          <input class="radio-option" type="radio" name="q11" id="q11-partial" value="Partially"><label class="radio-label" for="q11-partial">Partially</label>
+        </div>
+        <textarea class="q-input" name="q11_detail" placeholder="Please elaborate..."></textarea>
+      </div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q12</span></div><div class="q-text">What is the fastest turnaround time to bring in additional drivers if needed? Is there a contingency plan in place?</div><textarea class="q-input" name="q12" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q13</span></div><div class="q-text">Among the current driver roster, how many drivers have the willingness and physical capacity to handle a higher daily volume (200–250 packages per day)?</div><textarea class="q-input" name="q13" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">3</div><div class="section-title">Route Management & Road Conditions</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q14</span></div><div class="q-text">How does ECL periodically assess which routes are under the most pressure? What is the process for rebalancing workloads across routes when pressure builds up?</div><textarea class="q-input" name="q14" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q15</span></div><div class="q-text">For routes with known systemic access barriers — such as gated communities and malls — does ECL maintain a structured record or database of gate codes and access information? If so, how is this kept up to date and shared with drivers?</div><textarea class="q-input" name="q15" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">4</div><div class="section-title">Driver Training & Daily Management</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q16</span></div><div class="q-text">What does the onboarding and training process look like for new drivers? How long does it typically take before a new driver is operating independently and efficiently?</div><textarea class="q-input" name="q16" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q17</span></div><div class="q-text">Are drivers fully aware of the key delivery metrics — specifically 2400 POD, 4800 POD, and Final Delivery Rate — and do they understand how their daily actions directly impact these numbers?</div><textarea class="q-input" name="q17" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q18</span></div><div class="q-text">What does ECL's daily driver management process look like? Is there a regular morning briefing or daily check-in with drivers before they head out?</div><textarea class="q-input" name="q18" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q19</span></div><div class="q-text">What is ECL's internal process for handling underperforming drivers? Please walk us through the steps — from first warning to termination — and how quickly each stage is triggered.</div><textarea class="q-input" name="q19" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q20</span></div><div class="q-text">When a route is under high volume pressure, is the station manager willing and able to conduct pre-scanning before drivers depart? Is this currently being done consistently?</div><div class="q-note">Note: ECL is currently required to pre-scan every day. We would like to understand the current status and commitment level.</div><textarea class="q-input" name="q20" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="submit-area">
+      <button class="submit-btn" type="submit" id="submit-btn"><span id="btn-text">Submit Response</span></button>
+      <div class="submit-note">Your response will be saved to Google Sheets and a confirmation email will be sent to you.</div>
+    </div>
+
+  </form>
+
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Response Submitted Successfully</div>
+    <div class="success-sub">Thank you for completing the FPR-ECL Capacity Assessment.<br>A confirmation email has been sent to your inbox.<br><br>The FPR01 Station Team will review your response shortly.</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCL_Sxc6reKZvYXiBIgxNIJ8FnedvAuCqpGgpe1OefNaQoI5qWrI6jyfOQXqqc-Nf3/exec";
+
+  function showToast(msg, type) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast " + type + " show";
+    setTimeout(() => { t.className = "toast"; }, 4000);
+  }
+
+  document.getElementById("ecl-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("submit-btn");
+    const btnText = document.getElementById("btn-text");
+    const name = document.getElementById("resp-name").value.trim();
+    const email = document.getElementById("resp-email").value.trim();
+    if (!name || !email) { showToast("⚠️ Please fill in your name and email.", "error"); return; }
+
+    const formData = new FormData(this);
+    const payload = { name, email };
+    formData.forEach((val, key) => { if (key !== "name" && key !== "email") payload[key] = val; });
+    ["q8","q11"].forEach(q => {
+      const checked = document.querySelector('input[name="' + q + '"]:checked');
+      payload[q] = checked ? checked.value : "";
+    });
+
+    btn.disabled = true;
+    btnText.textContent = "Submitting...";
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById("ecl-form").style.display = "none";
+      document.getElementById("success-screen").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      showToast("❌ Submission failed. Please try again.", "error");
+      btn.disabled = false;
+      btnText.textContent = "Submit Response";
+    }
+  });
+</script>
+</body>
+</html>
