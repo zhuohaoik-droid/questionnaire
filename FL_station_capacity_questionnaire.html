@@ -11,9 +11,14 @@
   .container { max-width:760px; margin:0 auto; }
   .page-header { background:#fff; border-radius:12px 12px 0 0; padding:24px 28px 20px; border:1px solid #ebebeb; border-bottom:none; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
   .header-left { display:flex; align-items:flex-start; gap:10px; }
+  .header-right { display:flex; align-items:center; gap:10px; }
   .accent-bar { width:4px; height:32px; background:#e8420a; border-radius:2px; flex-shrink:0; margin-top:2px; }
   .page-title { font-size:16px; font-weight:600; color:#e8420a; line-height:1.3; }
   .subtitle { font-size:11px; color:#888; margin-top:3px; }
+  .lang-switch { display:flex; border:1px solid #e8e8e8; border-radius:8px; overflow:hidden; background:#fff; }
+  .lang-btn { border:none; background:transparent; padding:6px 10px; font-size:11px; font-weight:600; color:#666; cursor:pointer; transition:all 0.15s; }
+  .lang-btn.active { background:#fff5f2; color:#e8420a; }
+  .lang-btn:not(.active):hover { background:#f7f7f7; }
   .badge { padding:3px 10px; border-radius:6px; font-size:10px; font-weight:500; font-family:'DM Mono',monospace; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; white-space:nowrap; flex-shrink:0; }
   .gofo-bar { height:4px; background:linear-gradient(to right,#e8420a 80%,#f5a582 100%); margin-bottom:20px; }
   .respondent-card { background:#fff; border-radius:12px; padding:20px 24px; margin-bottom:16px; border:1px solid #ebebeb; }
@@ -81,7 +86,13 @@
         <div class="subtitle">For peak-season readiness assessment and conservative capacity estimation</div>
       </div>
     </div>
-    <div class="badge">GOFO-DSP</div>
+    <div class="header-right">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="lang-btn active" id="lang-en">EN</button>
+        <button type="button" class="lang-btn" id="lang-es">ES</button>
+      </div>
+      <div class="badge">GOFO-DSP</div>
+    </div>
   </div>
   <div class="gofo-bar"></div>
 
@@ -100,7 +111,7 @@
       </div>
       <div class="field-row" style="margin-top:12px;">
         <div class="field-group">
-          <label class="field-label" for="resp-station">Station Code *</label>
+          <label class="field-label" for="resp-station">Station-DSP Code *</label>
           <input class="field-input" id="resp-station" name="station_code" type="text" placeholder="e.g. MCO-SJR" required>
         </div>
         <div class="field-group">
@@ -119,60 +130,77 @@
     </div>
 
     <div class="section">
-      <div class="section-header"><div class="section-num">2</div><div class="section-title">Recruitment Surge & Backup Talent Pool</div></div>
+      <div class="section-header"><div class="section-num">2</div><div class="section-title">Fleet Readiness (Cargo Van Capacity)</div></div>
       <div class="q-item">
         <div class="q-meta"><span class="q-num">Q5</span></div>
-        <div class="q-text">If volume increases suddenly by 30%-50% tomorrow or within 48 hours, requiring a similar 30%-50% increase in drivers, can your DSP absorb this change in the short term?</div>
+        <div class="q-text">Does your DSP provide Cargo Van capacity for regular and peak delivery operations?</div>
         <div class="radio-group">
           <input class="radio-option" type="radio" name="q5" id="q5-yes" value="Yes"><label class="radio-label" for="q5-yes">Yes</label>
           <input class="radio-option" type="radio" name="q5" id="q5-no" value="No"><label class="radio-label" for="q5-no">No</label>
-          <input class="radio-option" type="radio" name="q5" id="q5-cond" value="Partially, with conditions"><label class="radio-label" for="q5-cond">Partially, with conditions</label>
+          <input class="radio-option" type="radio" name="q5" id="q5-partial" value="Partially"><label class="radio-label" for="q5-partial">Partially</label>
         </div>
-        <textarea class="q-input" name="q5_detail" placeholder="If yes/partial, describe execution measures and timeline."></textarea>
+        <textarea class="q-input" name="q5_detail" placeholder="If yes/partial, describe current setup (owned/leased/third-party)."></textarea>
       </div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q6</span></div><div class="q-text">What is your short-term recruitment capability? Please provide estimated headcount that can be onboarded within 1-2 days and within 3-7 days.</div><textarea class="q-input" name="q6" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q6</span></div><div class="q-text">What is your current Cargo Van reserve? Please provide the number of available vans (owned, leased, and emergency backup if applicable).</div><textarea class="q-input" name="q6" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q7</span></div><div class="q-text">What is the loading capacity of each Cargo Van (average and max packages per van per day)? Please include constraints (route type, cube-out, weight, etc.).</div><textarea class="q-input" name="q7" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">3</div><div class="section-title">Recruitment Surge & Backup Talent Pool</div></div>
       <div class="q-item">
-        <div class="q-meta"><span class="q-num">Q7</span></div>
+        <div class="q-meta"><span class="q-num">Q8</span></div>
+        <div class="q-text">If volume increases suddenly by 30%-50% tomorrow or within 48 hours, requiring a similar 30%-50% increase in drivers, can your DSP absorb this change in the short term?</div>
+        <div class="radio-group">
+          <input class="radio-option" type="radio" name="q8" id="q8-yes" value="Yes"><label class="radio-label" for="q8-yes">Yes</label>
+          <input class="radio-option" type="radio" name="q8" id="q8-no" value="No"><label class="radio-label" for="q8-no">No</label>
+          <input class="radio-option" type="radio" name="q8" id="q8-cond" value="Partially, with conditions"><label class="radio-label" for="q8-cond">Partially, with conditions</label>
+        </div>
+        <textarea class="q-input" name="q8_detail" placeholder="If yes/partial, describe execution measures and timeline."></textarea>
+      </div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q9</span></div><div class="q-text">What immediate actions will you take to absorb this surge (for example: rapid sourcing, shift adjustment, route rebalance, temporary support)?</div><textarea class="q-input" name="q9" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q10</span></div><div class="q-text">What is your short-term recruitment capability? Please provide estimated headcount that can be onboarded within 1-2 days and within 3-7 days.</div><textarea class="q-input" name="q10" placeholder="Your answer..."></textarea></div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q11</span></div>
         <div class="q-text">Do you maintain a backup talent pool (pre-screened, part-time, or reserve drivers)?</div>
         <div class="radio-group">
-          <input class="radio-option" type="radio" name="q7" id="q7-yes" value="Yes"><label class="radio-label" for="q7-yes">Yes</label>
-          <input class="radio-option" type="radio" name="q7" id="q7-no" value="No"><label class="radio-label" for="q7-no">No</label>
-          <input class="radio-option" type="radio" name="q7" id="q7-build" value="In progress"><label class="radio-label" for="q7-build">In progress</label>
+          <input class="radio-option" type="radio" name="q11" id="q11-yes" value="Yes"><label class="radio-label" for="q11-yes">Yes</label>
+          <input class="radio-option" type="radio" name="q11" id="q11-no" value="No"><label class="radio-label" for="q11-no">No</label>
+          <input class="radio-option" type="radio" name="q11" id="q11-build" value="In progress"><label class="radio-label" for="q11-build">In progress</label>
         </div>
-        <textarea class="q-input" name="q7_detail" placeholder="How large is the pool and how do you keep people warm/engaged?"></textarea>
+        <textarea class="q-input" name="q11_detail" placeholder="How large is the pool and how do you keep people warm/engaged?"></textarea>
       </div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q8</span></div><div class="q-text">What are your current hiring funnel metrics (lead to interview, interview to hire, hire to active, and 2/4-week retention)?</div><textarea class="q-input" name="q8" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q12</span></div><div class="q-text">What are your current hiring funnel metrics (lead to interview, interview to hire, hire to active, and 2/4-week retention)?</div><textarea class="q-input" name="q12" placeholder="Your answer..."></textarea></div>
     </div>
 
     <div class="section">
-      <div class="section-header"><div class="section-num">3</div><div class="section-title">Emergency Monitoring & Rescue Capability</div></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q9</span></div><div class="q-text">When emergencies happen during delivery, do you have real-time monitoring and escalation? How quickly can incidents be detected and reported?</div><textarea class="q-input" name="q9" placeholder="Your answer..."></textarea></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q10</span></div><div class="q-text">Do you have dedicated rescue personnel (or shift role) to support drivers in urgent situations? Please describe coverage and staffing model.</div><textarea class="q-input" name="q10" placeholder="Your answer..."></textarea></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q11</span></div><div class="q-text">If a driver cannot finish the route, do you have standby capacity to take over remaining packages? Please explain dispatch trigger, response time, and ownership.</div><textarea class="q-input" name="q11" placeholder="Your answer..."></textarea></div>
+      <div class="section-header"><div class="section-num">4</div><div class="section-title">Emergency Monitoring & Rescue Capability</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q13</span></div><div class="q-text">When emergencies happen during delivery, do you have real-time monitoring and escalation? How quickly can incidents be detected and reported?</div><textarea class="q-input" name="q13" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q14</span></div><div class="q-text">Do you have dedicated rescue personnel (or shift role) to support drivers in urgent situations? Please describe coverage and staffing model.</div><textarea class="q-input" name="q14" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q15</span></div><div class="q-text">If a driver cannot finish the route, do you have standby capacity to take over remaining packages? Please explain dispatch trigger, response time, and ownership.</div><textarea class="q-input" name="q15" placeholder="Your answer..."></textarea></div>
     </div>
 
     <div class="section">
-      <div class="section-header"><div class="section-num">4</div><div class="section-title">Organization Structure & Functional Coverage</div></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q12</span></div><div class="q-text">Do your drivers have tier levels (for example, novice/intermediate/senior)? If yes, how are levels defined and used for route assignment?</div><textarea class="q-input" name="q12" placeholder="Your answer..."></textarea></div>
+      <div class="section-header"><div class="section-num">5</div><div class="section-title">Organization Structure & Functional Coverage</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q16</span></div><div class="q-text">Do your drivers have tier levels (for example, novice/intermediate/senior)? If yes, how are levels defined and used for route assignment?</div><textarea class="q-input" name="q16" placeholder="Your answer..."></textarea></div>
       <div class="q-item">
-        <div class="q-meta"><span class="q-num">Q13</span></div>
+        <div class="q-meta"><span class="q-num">Q17</span></div>
         <div class="q-text">Which departments/functions currently exist in your DSP organization? (Multi-select)</div>
         <div class="checkbox-group">
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-recruitment" value="Recruitment"><label class="checkbox-label" for="dept-recruitment">Recruitment</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-dispatch" value="Dispatch / Rescue Supervision"><label class="checkbox-label" for="dept-dispatch">Dispatch / Rescue Supervision</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-finance" value="Finance"><label class="checkbox-label" for="dept-finance">Finance</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-station" value="Station Management"><label class="checkbox-label" for="dept-station">Station Management</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-claim" value="Claim / Exception Handling"><label class="checkbox-label" for="dept-claim">Claim / Exception Handling</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-training" value="Training"><label class="checkbox-label" for="dept-training">Training</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-ops-monitoring" value="Ops Monitoring"><label class="checkbox-label" for="dept-ops-monitoring">Ops Monitoring</label>
-          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-other" value="Other"><label class="checkbox-label" for="dept-other">Other</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-recruitment" value="Recruitment"><label class="checkbox-label" for="dept-recruitment">Recruitment</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-dispatch" value="Dispatch / Rescue Supervision"><label class="checkbox-label" for="dept-dispatch">Dispatch / Rescue Supervision</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-finance" value="Finance"><label class="checkbox-label" for="dept-finance">Finance</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-station" value="Station Management"><label class="checkbox-label" for="dept-station">Station Management</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-claim" value="Claim / Exception Handling"><label class="checkbox-label" for="dept-claim">Claim / Exception Handling</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-training" value="Training"><label class="checkbox-label" for="dept-training">Training</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-ops-monitoring" value="Ops Monitoring"><label class="checkbox-label" for="dept-ops-monitoring">Ops Monitoring</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q17_departments" id="dept-other" value="Other"><label class="checkbox-label" for="dept-other">Other</label>
         </div>
-        <input class="field-input inline-input" type="text" name="q13_other" placeholder="Optional: if 'Other', specify function name">
+        <input class="field-input inline-input" type="text" name="q17_other" placeholder="Optional: if 'Other', specify function name">
       </div>
       <div class="q-item">
-        <div class="q-meta"><span class="q-num">Q14</span></div>
+        <div class="q-meta"><span class="q-num">Q18</span></div>
         <div class="q-text">For each selected department, how many people are currently assigned?</div>
-        <div class="q-note">After selecting departments in Q13, input fields will appear below.</div>
+        <div class="q-note">After selecting departments in Q17, input fields will appear below.</div>
         <div class="dynamic-card">
           <div class="dynamic-title">Department Headcount</div>
           <div id="dept-count-container" class="dynamic-empty">No department selected yet.</div>
@@ -181,11 +209,11 @@
     </div>
 
     <div class="section">
-      <div class="section-header"><div class="section-num">5</div><div class="section-title">Training, Monitoring System, and Historical Performance</div></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q15</span></div><div class="q-text">How long does it take for a new driver to become independently productive, and what training checkpoints are required?</div><textarea class="q-input" name="q15" placeholder="Your answer..."></textarea></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q16</span></div><div class="q-text">What monitoring tools/dashboards do you use to track route progress, delay risk, and exception handling in real time?</div><textarea class="q-input" name="q16" placeholder="Your answer..."></textarea></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q17</span></div><div class="q-text">In past peak season or high-pressure weeks, what was your achieved volume increase percentage and service quality impact?</div><textarea class="q-input" name="q17" placeholder="Your answer..."></textarea></div>
-      <div class="q-item"><div class="q-meta"><span class="q-num">Q18</span></div><div class="q-text">What are your top 3 risks for handling a sudden 30%-50% surge, and what mitigation actions are already in place?</div><textarea class="q-input" name="q18" placeholder="Your answer..."></textarea></div>
+      <div class="section-header"><div class="section-num">6</div><div class="section-title">Training, Monitoring System, and Historical Performance</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q19</span></div><div class="q-text">How long does it take for a new driver to become independently productive, and what training checkpoints are required?</div><textarea class="q-input" name="q19" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q20</span></div><div class="q-text">What monitoring tools/dashboards do you use to track route progress, delay risk, and exception handling in real time?</div><textarea class="q-input" name="q20" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q21</span></div><div class="q-text">In past peak season or high-pressure weeks, what was your achieved volume increase percentage and service quality impact?</div><textarea class="q-input" name="q21" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q22</span></div><div class="q-text">What are your top 3 risks for handling a sudden 30%-50% surge, and what mitigation actions are already in place?</div><textarea class="q-input" name="q22" placeholder="Your answer..."></textarea></div>
     </div>
 
     <div class="submit-area">
@@ -205,6 +233,213 @@
 
 <script>
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCL_Sxc6reKZvYXiBIgxNIJ8FnedvAuCqpGgpe1OefNaQoI5qWrI6jyfOQXqqc-Nf3/exec";
+  let currentLang = "en";
+  const I18N = {
+    en: {
+      pageTitle: "GOFO DSP Capacity Assessment Questionnaire (General)",
+      subtitle: "For peak-season readiness assessment and conservative capacity estimation",
+      respondentTitle: "Respondent Information",
+      yourName: "Your Name *",
+      yourEmail: "Your Email *",
+      stationCode: "Station Code *",
+      companyName: "DSP Company Name",
+      namePlaceholder: "e.g. John Smith",
+      emailPlaceholder: "e.g. john@dsp.com",
+      stationPlaceholder: "e.g. MCO-SJR",
+      companyPlaceholder: "e.g. ABC Logistics",
+      sections: [
+        "Current Baseline & Capacity Context",
+        "Fleet Readiness (Cargo Van Capacity)",
+        "Recruitment Surge & Backup Talent Pool",
+        "Emergency Monitoring & Rescue Capability",
+        "Organization Structure & Functional Coverage",
+        "Training, Monitoring System, and Historical Performance"
+      ],
+      questions: [
+        "How many active delivery drivers are currently available on your roster?",
+        "What is the average daily package load per driver under normal operating conditions?",
+        "What is the maximum sustainable daily package load per driver without creating high burnout risk?",
+        "What is your highest verified completed volume in past peak periods, and for how many consecutive days/weeks was it sustained?",
+        "Does your DSP provide Cargo Van capacity for regular and peak delivery operations?",
+        "What is your current Cargo Van reserve? Please provide the number of available vans (owned, leased, and emergency backup if applicable).",
+        "What is the loading capacity of each Cargo Van (average and max packages per van per day)? Please include constraints (route type, cube-out, weight, etc.).",
+        "If volume increases suddenly by 30%-50% tomorrow or within 48 hours, requiring a similar 30%-50% increase in drivers, can your DSP absorb this change in the short term?",
+        "What immediate actions will you take to absorb this surge (for example: rapid sourcing, shift adjustment, route rebalance, temporary support)?",
+        "What is your short-term recruitment capability? Please provide estimated headcount that can be onboarded within 1-2 days and within 3-7 days.",
+        "Do you maintain a backup talent pool (pre-screened, part-time, or reserve drivers)?",
+        "What are your current hiring funnel metrics (lead to interview, interview to hire, hire to active, and 2/4-week retention)?",
+        "When emergencies happen during delivery, do you have real-time monitoring and escalation? How quickly can incidents be detected and reported?",
+        "Do you have dedicated rescue personnel (or shift role) to support drivers in urgent situations? Please describe coverage and staffing model.",
+        "If a driver cannot finish the route, do you have standby capacity to take over remaining packages? Please explain dispatch trigger, response time, and ownership.",
+        "Do your drivers have tier levels (for example, novice/intermediate/senior)? If yes, how are levels defined and used for route assignment?",
+        "Which departments/functions currently exist in your DSP organization? (Multi-select)",
+        "For each selected department, how many people are currently assigned?",
+        "How long does it take for a new driver to become independently productive, and what training checkpoints are required?",
+        "What monitoring tools/dashboards do you use to track route progress, delay risk, and exception handling in real time?",
+        "In past peak season or high-pressure weeks, what was your achieved volume increase percentage and service quality impact?",
+        "What are your top 3 risks for handling a sudden 30%-50% surge, and what mitigation actions are already in place?"
+      ],
+      q18Note: "After selecting departments in Q17, input fields will appear below.",
+      optionsQ5: ["Yes", "No", "Partially"],
+      optionsQ8: ["Yes", "No", "Partially, with conditions"],
+      optionsQ11: ["Yes", "No", "In progress"],
+      deptLabels: [
+        "Recruitment",
+        "Dispatch / Rescue Supervision",
+        "Finance",
+        "Station Management",
+        "Claim / Exception Handling",
+        "Training",
+        "Ops Monitoring",
+        "Other"
+      ],
+      deptTitle: "Department Headcount",
+      deptEmpty: "No department selected yet.",
+      countPlaceholder: "# of people",
+      answerPlaceholder: "Your answer...",
+      q5DetailPlaceholder: "If yes/partial, describe current setup (owned/leased/third-party).",
+      q8DetailPlaceholder: "If yes/partial, describe execution measures and timeline.",
+      q11DetailPlaceholder: "How large is the pool and how do you keep people warm/engaged?",
+      q17OtherPlaceholder: "Optional: if 'Other', specify function name",
+      submitBtn: "Submit Response",
+      submitNote: "Your response will be saved to Google Sheets for GOFO internal review.",
+      successTitle: "Response Submitted Successfully",
+      successSub: "Thank you for completing the GOFO DSP Capacity Assessment.<br>The station operation team will review your response shortly.",
+      requiredToast: "Please fill in Name, Email, and Station Code.",
+      submitTimeoutToast: "Submission timed out. Please try again.",
+      submitFailedToast: "Submission failed. Please try again.",
+      submitting: "Submitting..."
+    },
+    es: {
+      pageTitle: "Cuestionario General de Capacidad DSP GOFO",
+      subtitle: "Para evaluacion de preparacion de temporada alta y estimacion conservadora de capacidad",
+      respondentTitle: "Informacion del encuestado",
+      yourName: "Tu nombre *",
+      yourEmail: "Tu correo electronico *",
+      stationCode: "Codigo de estacion *",
+      companyName: "Nombre de la empresa DSP",
+      namePlaceholder: "ej. Juan Perez",
+      emailPlaceholder: "ej. juan@dsp.com",
+      stationPlaceholder: "ej. MCO-SJR",
+      companyPlaceholder: "ej. ABC Logistics",
+      sections: [
+        "Contexto de capacidad actual",
+        "Preparacion de flota (capacidad de Cargo Van)",
+        "Contratacion rapida y pool de respaldo",
+        "Monitoreo de emergencia y capacidad de rescate",
+        "Estructura organizacional y cobertura funcional",
+        "Capacitacion, monitoreo y desempeno historico"
+      ],
+      questions: [
+        "Cuantos conductores activos de entrega estan disponibles actualmente en tu plantilla?",
+        "Cual es la carga diaria promedio de paquetes por conductor en condiciones normales?",
+        "Cual es la carga diaria maxima sostenible por conductor sin generar alto riesgo de desgaste?",
+        "Cual fue tu mayor volumen completado y verificado en periodos de alta demanda, y por cuantos dias/semanas consecutivas se sostuvo?",
+        "Tu DSP ofrece capacidad de Cargo Van para operacion regular y temporada alta?",
+        "Cual es tu reserva actual de Cargo Van? Indica el numero de vans disponibles (propias, rentadas y respaldo de emergencia si aplica).",
+        "Cual es la capacidad de carga de cada Cargo Van (promedio y maximo de paquetes por van por dia)? Incluye restricciones (tipo de ruta, volumen, peso, etc.).",
+        "Si el volumen aumenta de forma repentina en 30%-50% manana o dentro de 48 horas, requiriendo un aumento similar de 30%-50% en conductores, tu DSP puede absorber ese cambio en el corto plazo?",
+        "Que acciones inmediatas tomaran para absorber este aumento (por ejemplo: reclutamiento rapido, ajuste de turnos, rebalanceo de rutas, soporte temporal)?",
+        "Cual es tu capacidad de contratacion de corto plazo? Indica cuantas personas pueden activarse en 1-2 dias y en 3-7 dias.",
+        "Mantienen un pool de talento de respaldo (pre-evaluado, part-time o conductores de reserva)?",
+        "Cuales son tus metricas actuales del embudo de contratacion (lead a entrevista, entrevista a contratacion, contratacion a activo y retencion de 2/4 semanas)?",
+        "Cuando ocurre una emergencia durante la entrega, tienen monitoreo en tiempo real y escalamiento? Que tan rapido pueden detectar y reportar incidentes?",
+        "Tienen personal dedicado de rescate (o rol de turno) para apoyar a conductores en situaciones urgentes? Describe cobertura y modelo de personal.",
+        "Si un conductor no puede terminar su ruta, tienen capacidad de respaldo para tomar los paquetes restantes? Explica disparador, tiempo de respuesta y responsables.",
+        "Sus conductores tienen niveles (por ejemplo, junior/intermedio/senior)? Si si, como se definen y como se usan para asignacion de rutas?",
+        "Que departamentos/funciones existen actualmente en su organizacion DSP? (Seleccion multiple)",
+        "Para cada departamento seleccionado, cuantas personas estan asignadas actualmente?",
+        "Cuanto tiempo tarda un conductor nuevo en ser productivo de forma independiente y que hitos de capacitacion se requieren?",
+        "Que herramientas/tableros usan para monitorear avance de ruta, riesgo de atraso y manejo de excepciones en tiempo real?",
+        "En temporada alta o semanas de alta presion anteriores, cual fue el porcentaje de aumento de volumen logrado y su impacto en calidad de servicio?",
+        "Cuales son sus 3 principales riesgos para manejar un aumento repentino de 30%-50% y que acciones de mitigacion ya estan implementadas?"
+      ],
+      q18Note: "Despues de seleccionar departamentos en Q17, apareceran campos de captura abajo.",
+      optionsQ5: ["Si", "No", "Parcialmente"],
+      optionsQ8: ["Si", "No", "Parcialmente, con condiciones"],
+      optionsQ11: ["Si", "No", "En progreso"],
+      deptLabels: [
+        "Reclutamiento",
+        "Despacho / Supervision de rescate",
+        "Finanzas",
+        "Gerencia de estacion",
+        "Reclamos / Manejo de excepciones",
+        "Capacitacion",
+        "Monitoreo de operaciones",
+        "Otro"
+      ],
+      deptTitle: "Cantidad de personal por departamento",
+      deptEmpty: "Aun no hay departamentos seleccionados.",
+      countPlaceholder: "# de personas",
+      answerPlaceholder: "Tu respuesta...",
+      q5DetailPlaceholder: "Si respondes si/parcial, describe el esquema actual (propio/renta/tercero).",
+      q8DetailPlaceholder: "Si respondes si/parcial, describe medidas de ejecucion y tiempos.",
+      q11DetailPlaceholder: "Que tamano tiene el pool y como mantienen activa a esa gente?",
+      q17OtherPlaceholder: "Opcional: si eliges 'Otro', especifica la funcion",
+      submitBtn: "Enviar respuesta",
+      submitNote: "Tu respuesta se guardara en Google Sheets para revision interna de GOFO.",
+      successTitle: "Respuesta enviada con exito",
+      successSub: "Gracias por completar la evaluacion de capacidad DSP de GOFO.<br>El equipo de operaciones de estacion revisara tu respuesta pronto.",
+      requiredToast: "Completa Nombre, Correo electronico y Codigo de estacion.",
+      submitTimeoutToast: "El envio excedio el tiempo. Intenta de nuevo.",
+      submitFailedToast: "Error al enviar. Intenta de nuevo.",
+      submitting: "Enviando..."
+    }
+  };
+
+  function applyLanguage(lang) {
+    const t = I18N[lang];
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.querySelector(".page-title").textContent = t.pageTitle;
+    document.querySelector(".subtitle").textContent = t.subtitle;
+    document.querySelector(".respondent-title").textContent = t.respondentTitle;
+    document.querySelector('label[for="resp-name"]').textContent = t.yourName;
+    document.querySelector('label[for="resp-email"]').textContent = t.yourEmail;
+    document.querySelector('label[for="resp-station"]').textContent = t.stationCode;
+    document.querySelector('label[for="resp-company"]').textContent = t.companyName;
+    document.getElementById("resp-name").placeholder = t.namePlaceholder;
+    document.getElementById("resp-email").placeholder = t.emailPlaceholder;
+    document.getElementById("resp-station").placeholder = t.stationPlaceholder;
+    document.getElementById("resp-company").placeholder = t.companyPlaceholder;
+    document.querySelectorAll(".section-title").forEach((el, i) => { el.textContent = t.sections[i] || ""; });
+    document.querySelectorAll(".q-text").forEach((el, i) => { el.textContent = t.questions[i] || ""; });
+    document.querySelector(".q-note").textContent = t.q18Note;
+    document.querySelectorAll(".q-input").forEach((el) => { el.placeholder = t.answerPlaceholder; });
+    document.querySelector('textarea[name="q5_detail"]').placeholder = t.q5DetailPlaceholder;
+    document.querySelector('textarea[name="q8_detail"]').placeholder = t.q8DetailPlaceholder;
+    document.querySelector('textarea[name="q11_detail"]').placeholder = t.q11DetailPlaceholder;
+    document.querySelector('input[name="q17_other"]').placeholder = t.q17OtherPlaceholder;
+    document.querySelector('label[for="q5-yes"]').textContent = t.optionsQ5[0];
+    document.querySelector('label[for="q5-no"]').textContent = t.optionsQ5[1];
+    document.querySelector('label[for="q5-partial"]').textContent = t.optionsQ5[2];
+    document.querySelector('label[for="q8-yes"]').textContent = t.optionsQ8[0];
+    document.querySelector('label[for="q8-no"]').textContent = t.optionsQ8[1];
+    document.querySelector('label[for="q8-cond"]').textContent = t.optionsQ8[2];
+    document.querySelector('label[for="q11-yes"]').textContent = t.optionsQ11[0];
+    document.querySelector('label[for="q11-no"]').textContent = t.optionsQ11[1];
+    document.querySelector('label[for="q11-build"]').textContent = t.optionsQ11[2];
+    [
+      "dept-recruitment",
+      "dept-dispatch",
+      "dept-finance",
+      "dept-station",
+      "dept-claim",
+      "dept-training",
+      "dept-ops-monitoring",
+      "dept-other"
+    ].forEach((id, i) => {
+      document.querySelector('label[for="' + id + '"]').textContent = t.deptLabels[i];
+    });
+    document.querySelector(".dynamic-title").textContent = t.deptTitle;
+    document.getElementById("btn-text").textContent = t.submitBtn;
+    document.querySelector(".submit-note").textContent = t.submitNote;
+    document.querySelector(".success-title").textContent = t.successTitle;
+    document.querySelector(".success-sub").innerHTML = t.successSub;
+    document.getElementById("lang-en").classList.toggle("active", lang === "en");
+    document.getElementById("lang-es").classList.toggle("active", lang === "es");
+    updateDepartmentCountInputs();
+  }
 
   function showToast(msg, type) {
     const toast = document.getElementById("toast");
@@ -214,22 +449,24 @@
   }
 
   function updateDepartmentCountInputs() {
+    const t = I18N[currentLang];
     const selected = Array.from(document.querySelectorAll(".org-dept:checked"));
     const container = document.getElementById("dept-count-container");
 
     if (!selected.length) {
       container.className = "dynamic-empty";
-      container.textContent = "No department selected yet.";
+      container.textContent = t.deptEmpty;
       return;
     }
 
     container.className = "";
     container.innerHTML = selected.map((input) => {
       const safeKey = input.id.replace("dept-", "");
+      const labelText = document.querySelector('label[for="' + input.id + '"]').textContent;
       return `
         <div class="count-row">
-          <label class="count-label" for="count-${safeKey}">${input.value}</label>
-          <input class="count-input" id="count-${safeKey}" name="dept_count_${safeKey}" type="number" min="0" step="1" placeholder="# of people">
+          <label class="count-label" for="count-${safeKey}">${labelText}</label>
+          <input class="count-input" id="count-${safeKey}" name="dept_count_${safeKey}" type="number" min="0" step="1" placeholder="${t.countPlaceholder}">
         </div>
       `;
     }).join("");
@@ -239,7 +476,9 @@
     el.addEventListener("change", updateDepartmentCountInputs);
   });
 
-  updateDepartmentCountInputs();
+  document.getElementById("lang-en").addEventListener("click", function() { applyLanguage("en"); });
+  document.getElementById("lang-es").addEventListener("click", function() { applyLanguage("es"); });
+  applyLanguage("en");
 
   document.getElementById("pfc-form").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -250,7 +489,7 @@
     const stationCode = document.getElementById("resp-station").value.trim();
 
     if (!name || !email || !stationCode) {
-      showToast("Please fill in Name, Email, and Station Code.", "error");
+      showToast(I18N[currentLang].requiredToast, "error");
       return;
     }
 
@@ -270,13 +509,13 @@
       }
     });
 
-    ["q5", "q7"].forEach((q) => {
+    ["q5", "q8", "q11"].forEach((q) => {
       const checked = document.querySelector('input[name="' + q + '"]:checked');
       payload[q] = checked ? checked.value : "";
     });
 
     btn.disabled = true;
-    btnText.textContent = "Submitting...";
+    btnText.textContent = I18N[currentLang].submitting;
 
     try {
       payload.submittedAt = new Date().toISOString();
@@ -297,9 +536,9 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       const isTimeout = err && err.name === "AbortError";
-      showToast(isTimeout ? "Submission timed out. Please try again." : "Submission failed. Please try again.", "error");
+      showToast(isTimeout ? I18N[currentLang].submitTimeoutToast : I18N[currentLang].submitFailedToast, "error");
       btn.disabled = false;
-      btnText.textContent = "Submit Response";
+      btnText.textContent = I18N[currentLang].submitBtn;
     }
   });
 </script>
