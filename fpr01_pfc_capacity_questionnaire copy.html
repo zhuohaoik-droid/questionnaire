@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOFO DSP Capacity Assessment (General)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f7f7f5; font-family:'DM Sans',sans-serif; color:#1a1a1a; padding:32px 16px 80px; }
+  .container { max-width:760px; margin:0 auto; }
+  .page-header { background:#fff; border-radius:12px 12px 0 0; padding:24px 28px 20px; border:1px solid #ebebeb; border-bottom:none; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .header-left { display:flex; align-items:flex-start; gap:10px; }
+  .accent-bar { width:4px; height:32px; background:#e8420a; border-radius:2px; flex-shrink:0; margin-top:2px; }
+  .page-title { font-size:16px; font-weight:600; color:#e8420a; line-height:1.3; }
+  .subtitle { font-size:11px; color:#888; margin-top:3px; }
+  .badge { padding:3px 10px; border-radius:6px; font-size:10px; font-weight:500; font-family:'DM Mono',monospace; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; white-space:nowrap; flex-shrink:0; }
+  .gofo-bar { height:4px; background:linear-gradient(to right,#e8420a 80%,#f5a582 100%); margin-bottom:20px; }
+  .respondent-card { background:#fff; border-radius:12px; padding:20px 24px; margin-bottom:16px; border:1px solid #ebebeb; }
+  .respondent-title { font-size:12px; font-weight:600; color:#1a1a1a; margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+  .respondent-title::before { content:''; display:inline-block; width:7px; height:7px; background:#e8420a; border-radius:50%; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field-group { display:flex; flex-direction:column; gap:5px; }
+  .field-label { font-size:10px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
+  .field-input { padding:9px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; color:#1a1a1a; background:#fafafa; transition:all 0.15s; outline:none; }
+  .field-input:focus { border-color:#e8420a; background:#fff; box-shadow:0 0 0 3px rgba(232,66,10,0.08); }
+  .field-input::placeholder { color:#b7b7b7; }
+  .section { background:#fff; border-radius:12px; border:1px solid #ebebeb; margin-bottom:16px; overflow:hidden; }
+  .section-header { display:flex; align-items:center; gap:10px; padding:15px 20px; border-bottom:1px solid #f4f4f4; background:#fafafa; }
+  .section-num { width:26px; height:26px; border-radius:50%; background:#e8420a; color:#fff; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-title { font-size:13px; font-weight:600; color:#1a1a1a; }
+  .q-item { padding:15px 20px; border-bottom:1px solid #f4f4f4; }
+  .q-item:last-child { border-bottom:none; }
+  .q-item:hover { background:#fffaf9; }
+  .q-meta { display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+  .q-num { font-family:'DM Mono',monospace; font-size:9px; font-weight:600; color:#fff; background:#ccc; border-radius:4px; padding:2px 6px; flex-shrink:0; }
+  .q-text { font-size:12.5px; color:#333; line-height:1.65; }
+  .q-note { font-size:10.5px; color:#888; margin-top:5px; font-style:italic; }
+  .q-input { margin-top:10px; width:100%; padding:10px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12.5px; color:#1a1a1a; background:#fafafa; resize:vertical; min-height:72px; transition:all 0.15s; outline:none; line-height:1.6; }
+  .q-input:focus { border-color:#e8420a; background:#fff; box-shadow:0 0 0 3px rgba(232,66,10,0.08); }
+  .q-input::placeholder { color:#b7b7b7; }
+  .radio-group, .checkbox-group { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .radio-option, .checkbox-option { display:none; }
+  .radio-label, .checkbox-label { padding:7px 14px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:12px; color:#555; cursor:pointer; transition:all 0.15s; background:#fafafa; user-select:none; }
+  .radio-option:checked + .radio-label, .checkbox-option:checked + .checkbox-label { border-color:#e8420a; background:#fff5f2; color:#e8420a; font-weight:500; }
+  .inline-input { margin-top:10px; }
+  .dynamic-card { margin-top:10px; border:1px solid #eee; border-radius:8px; padding:12px; background:#fcfcfc; }
+  .dynamic-title { font-size:11px; color:#666; margin-bottom:8px; font-weight:600; }
+  .dynamic-empty { font-size:11px; color:#999; }
+  .count-row { display:grid; grid-template-columns:1fr 120px; gap:10px; margin-bottom:8px; align-items:center; }
+  .count-row:last-child { margin-bottom:0; }
+  .count-label { font-size:12px; color:#333; }
+  .count-input { width:100%; padding:8px 10px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:12px; background:#fff; }
+  .count-input:focus { border-color:#e8420a; outline:none; box-shadow:0 0 0 3px rgba(232,66,10,0.08); }
+  .submit-area { margin-top:24px; text-align:center; }
+  .submit-btn { display:inline-flex; align-items:center; gap:8px; padding:13px 36px; background:#e8420a; color:#fff; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; box-shadow:0 2px 8px rgba(232,66,10,0.25); }
+  .submit-btn:hover { background:#cf3809; transform:translateY(-1px); }
+  .submit-btn:disabled { background:#ccc; box-shadow:none; cursor:not-allowed; transform:none; }
+  .submit-note { margin-top:8px; font-size:10.5px; color:#888; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); padding:12px 22px; border-radius:10px; font-size:12.5px; font-weight:500; opacity:0; transition:all 0.3s; pointer-events:none; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,0.12); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.error { background:#e8420a; color:#fff; }
+  .success-screen { display:none; text-align:center; background:#fff; border-radius:12px; border:1px solid #ebebeb; padding:56px 28px; }
+  .success-icon { font-size:44px; margin-bottom:14px; }
+  .success-title { font-size:17px; font-weight:600; color:#1a1a1a; margin-bottom:8px; }
+  .success-sub { font-size:12.5px; color:#888; line-height:1.65; }
+  @media(max-width:560px) {
+    .field-row { grid-template-columns:1fr; }
+    .page-header { flex-direction:column; }
+    .count-row { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <div class="header-left">
+      <div class="accent-bar"></div>
+      <div>
+        <div class="page-title">GOFO DSP Capacity Assessment Questionnaire (General)</div>
+        <div class="subtitle">For peak-season readiness assessment and conservative capacity estimation</div>
+      </div>
+    </div>
+    <div class="badge">GOFO-DSP</div>
+  </div>
+  <div class="gofo-bar"></div>
+
+  <form id="pfc-form">
+    <div class="respondent-card">
+      <div class="respondent-title">Respondent Information</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="resp-name">Your Name *</label>
+          <input class="field-input" id="resp-name" name="name" type="text" placeholder="e.g. John Smith" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="resp-email">Your Email *</label>
+          <input class="field-input" id="resp-email" name="email" type="email" placeholder="e.g. john@dsp.com" required>
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:12px;">
+        <div class="field-group">
+          <label class="field-label" for="resp-station">Station Code *</label>
+          <input class="field-input" id="resp-station" name="station_code" type="text" placeholder="e.g. MCO-SJR" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="resp-company">DSP Company Name</label>
+          <input class="field-input" id="resp-company" name="company_name" type="text" placeholder="e.g. ABC Logistics">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">1</div><div class="section-title">Current Baseline & Capacity Context</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q1</span></div><div class="q-text">How many active delivery drivers are currently available on your roster?</div><textarea class="q-input" name="q1" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q2</span></div><div class="q-text">What is the average daily package load per driver under normal operating conditions?</div><textarea class="q-input" name="q2" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q3</span></div><div class="q-text">What is the maximum sustainable daily package load per driver without creating high burnout risk?</div><textarea class="q-input" name="q3" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q4</span></div><div class="q-text">What is your highest verified completed volume in past peak periods, and for how many consecutive days/weeks was it sustained?</div><textarea class="q-input" name="q4" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">2</div><div class="section-title">Recruitment Surge & Backup Talent Pool</div></div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q5</span></div>
+        <div class="q-text">If volume increases suddenly by 30%-50% tomorrow or within 48 hours, requiring a similar 30%-50% increase in drivers, can your DSP absorb this change in the short term?</div>
+        <div class="radio-group">
+          <input class="radio-option" type="radio" name="q5" id="q5-yes" value="Yes"><label class="radio-label" for="q5-yes">Yes</label>
+          <input class="radio-option" type="radio" name="q5" id="q5-no" value="No"><label class="radio-label" for="q5-no">No</label>
+          <input class="radio-option" type="radio" name="q5" id="q5-cond" value="Partially, with conditions"><label class="radio-label" for="q5-cond">Partially, with conditions</label>
+        </div>
+        <textarea class="q-input" name="q5_detail" placeholder="If yes/partial, describe execution measures and timeline."></textarea>
+      </div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q6</span></div><div class="q-text">What is your short-term recruitment capability? Please provide estimated headcount that can be onboarded within 1-2 days and within 3-7 days.</div><textarea class="q-input" name="q6" placeholder="Your answer..."></textarea></div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q7</span></div>
+        <div class="q-text">Do you maintain a backup talent pool (pre-screened, part-time, or reserve drivers)?</div>
+        <div class="radio-group">
+          <input class="radio-option" type="radio" name="q7" id="q7-yes" value="Yes"><label class="radio-label" for="q7-yes">Yes</label>
+          <input class="radio-option" type="radio" name="q7" id="q7-no" value="No"><label class="radio-label" for="q7-no">No</label>
+          <input class="radio-option" type="radio" name="q7" id="q7-build" value="In progress"><label class="radio-label" for="q7-build">In progress</label>
+        </div>
+        <textarea class="q-input" name="q7_detail" placeholder="How large is the pool and how do you keep people warm/engaged?"></textarea>
+      </div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q8</span></div><div class="q-text">What are your current hiring funnel metrics (lead to interview, interview to hire, hire to active, and 2/4-week retention)?</div><textarea class="q-input" name="q8" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">3</div><div class="section-title">Emergency Monitoring & Rescue Capability</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q9</span></div><div class="q-text">When emergencies happen during delivery, do you have real-time monitoring and escalation? How quickly can incidents be detected and reported?</div><textarea class="q-input" name="q9" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q10</span></div><div class="q-text">Do you have dedicated rescue personnel (or shift role) to support drivers in urgent situations? Please describe coverage and staffing model.</div><textarea class="q-input" name="q10" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q11</span></div><div class="q-text">If a driver cannot finish the route, do you have standby capacity to take over remaining packages? Please explain dispatch trigger, response time, and ownership.</div><textarea class="q-input" name="q11" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">4</div><div class="section-title">Organization Structure & Functional Coverage</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q12</span></div><div class="q-text">Do your drivers have tier levels (for example, novice/intermediate/senior)? If yes, how are levels defined and used for route assignment?</div><textarea class="q-input" name="q12" placeholder="Your answer..."></textarea></div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q13</span></div>
+        <div class="q-text">Which departments/functions currently exist in your DSP organization? (Multi-select)</div>
+        <div class="checkbox-group">
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-recruitment" value="Recruitment"><label class="checkbox-label" for="dept-recruitment">Recruitment</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-dispatch" value="Dispatch / Rescue Supervision"><label class="checkbox-label" for="dept-dispatch">Dispatch / Rescue Supervision</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-finance" value="Finance"><label class="checkbox-label" for="dept-finance">Finance</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-station" value="Station Management"><label class="checkbox-label" for="dept-station">Station Management</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-claim" value="Claim / Exception Handling"><label class="checkbox-label" for="dept-claim">Claim / Exception Handling</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-training" value="Training"><label class="checkbox-label" for="dept-training">Training</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-ops-monitoring" value="Ops Monitoring"><label class="checkbox-label" for="dept-ops-monitoring">Ops Monitoring</label>
+          <input class="checkbox-option org-dept" type="checkbox" name="q13_departments" id="dept-other" value="Other"><label class="checkbox-label" for="dept-other">Other</label>
+        </div>
+        <input class="field-input inline-input" type="text" name="q13_other" placeholder="Optional: if 'Other', specify function name">
+      </div>
+      <div class="q-item">
+        <div class="q-meta"><span class="q-num">Q14</span></div>
+        <div class="q-text">For each selected department, how many people are currently assigned?</div>
+        <div class="q-note">After selecting departments in Q13, input fields will appear below.</div>
+        <div class="dynamic-card">
+          <div class="dynamic-title">Department Headcount</div>
+          <div id="dept-count-container" class="dynamic-empty">No department selected yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-num">5</div><div class="section-title">Training, Monitoring System, and Historical Performance</div></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q15</span></div><div class="q-text">How long does it take for a new driver to become independently productive, and what training checkpoints are required?</div><textarea class="q-input" name="q15" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q16</span></div><div class="q-text">What monitoring tools/dashboards do you use to track route progress, delay risk, and exception handling in real time?</div><textarea class="q-input" name="q16" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q17</span></div><div class="q-text">In past peak season or high-pressure weeks, what was your achieved volume increase percentage and service quality impact?</div><textarea class="q-input" name="q17" placeholder="Your answer..."></textarea></div>
+      <div class="q-item"><div class="q-meta"><span class="q-num">Q18</span></div><div class="q-text">What are your top 3 risks for handling a sudden 30%-50% surge, and what mitigation actions are already in place?</div><textarea class="q-input" name="q18" placeholder="Your answer..."></textarea></div>
+    </div>
+
+    <div class="submit-area">
+      <button class="submit-btn" type="submit" id="submit-btn"><span id="btn-text">Submit Response</span></button>
+      <div class="submit-note">Your response will be saved to Google Sheets for GOFO internal review.</div>
+    </div>
+  </form>
+
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Response Submitted Successfully</div>
+    <div class="success-sub">Thank you for completing the GOFO DSP Capacity Assessment.<br>The station operation team will review your response shortly.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCL_Sxc6reKZvYXiBIgxNIJ8FnedvAuCqpGgpe1OefNaQoI5qWrI6jyfOQXqqc-Nf3/exec";
+
+  function showToast(msg, type) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.className = "toast " + type + " show";
+    setTimeout(() => { toast.className = "toast"; }, 4000);
+  }
+
+  function updateDepartmentCountInputs() {
+    const selected = Array.from(document.querySelectorAll(".org-dept:checked"));
+    const container = document.getElementById("dept-count-container");
+
+    if (!selected.length) {
+      container.className = "dynamic-empty";
+      container.textContent = "No department selected yet.";
+      return;
+    }
+
+    container.className = "";
+    container.innerHTML = selected.map((input) => {
+      const safeKey = input.id.replace("dept-", "");
+      return `
+        <div class="count-row">
+          <label class="count-label" for="count-${safeKey}">${input.value}</label>
+          <input class="count-input" id="count-${safeKey}" name="dept_count_${safeKey}" type="number" min="0" step="1" placeholder="# of people">
+        </div>
+      `;
+    }).join("");
+  }
+
+  document.querySelectorAll(".org-dept").forEach((el) => {
+    el.addEventListener("change", updateDepartmentCountInputs);
+  });
+
+  updateDepartmentCountInputs();
+
+  document.getElementById("pfc-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("submit-btn");
+    const btnText = document.getElementById("btn-text");
+    const name = document.getElementById("resp-name").value.trim();
+    const email = document.getElementById("resp-email").value.trim();
+    const stationCode = document.getElementById("resp-station").value.trim();
+
+    if (!name || !email || !stationCode) {
+      showToast("Please fill in Name, Email, and Station Code.", "error");
+      return;
+    }
+
+    const formData = new FormData(this);
+    const payload = { name, email, station_code: stationCode };
+
+    formData.forEach((val, key) => {
+      if (key === "name" || key === "email" || key === "station_code") {
+        return;
+      }
+      if (payload[key] === undefined) {
+        payload[key] = val;
+      } else if (Array.isArray(payload[key])) {
+        payload[key].push(val);
+      } else {
+        payload[key] = [payload[key], val];
+      }
+    });
+
+    ["q5", "q7"].forEach((q) => {
+      const checked = document.querySelector('input[name="' + q + '"]:checked');
+      payload[q] = checked ? checked.value : "";
+    });
+
+    btn.disabled = true;
+    btnText.textContent = "Submitting...";
+
+    try {
+      payload.submittedAt = new Date().toISOString();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+      document.getElementById("pfc-form").style.display = "none";
+      document.getElementById("success-screen").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      const isTimeout = err && err.name === "AbortError";
+      showToast(isTimeout ? "Submission timed out. Please try again." : "Submission failed. Please try again.", "error");
+      btn.disabled = false;
+      btnText.textContent = "Submit Response";
+    }
+  });
+</script>
+</body>
+</html>
